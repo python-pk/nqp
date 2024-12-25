@@ -495,7 +495,7 @@ class NQP::World is HLL::World {
 #?if js
         QAST::Op.new( :op('null') )
 #?endif
-#?if moar
+
         my $libs := QAST::Stmts.new();
         if %*COMPILING<%?OPTIONS><vmlibs> {
             for nqp::split(',', %*COMPILING<%?OPTIONS><vmlibs>) {
@@ -514,7 +514,7 @@ class NQP::World is HLL::World {
         }
         self.add_fixup_task(:deserialize_ast($libs), :fixup_ast($libs));
         $libs
-#?endif
+
     }
 
     # Adds some initial tasks.

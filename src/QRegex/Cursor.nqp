@@ -1023,9 +1023,9 @@ role NQPMatchRole is export {
 #?if js
                 ($i ?? nqp::lc(nqp::substr($target, $pos, $litlen)) eq nqp::lc($str)
 #?endif
-#?if moar
+
                 ($i ?? nqp::eqatic($target, $str, $pos)
-#?endif
+
                     !! nqp::eqat($target, $str, $pos)) {
                 self."!cursor_start_cur"()."!cursor_pass_quick"($pos + $litlen);
             }
@@ -1641,9 +1641,6 @@ class NQPRegexMethod {
     method Str()  { self.name                }
 }
 
-#?if !moar
-nqp::setinvokespec(NQPRegexMethod, NQPRegexMethod, '$!code', nqp::null);
-#?endif
 
 #- NQPRegex --------------------------------------------------------------------
 class NQPRegex is NQPRegexMethod {
@@ -1655,6 +1652,3 @@ class NQPRegex is NQPRegexMethod {
     }
 }
 
-#?if !moar
-nqp::setinvokespec(NQPRegex, NQPRegexMethod, '$!code', nqp::null);
-#?endif

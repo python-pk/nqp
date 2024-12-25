@@ -126,9 +126,6 @@ knowhow NQPClassHOW {
             $!methods      := bindkey_on_clone($!methods, $name, $code);
             $!method_order := push_on_clone($!method_order, $code);
             $!cached_all_method_table := nqp::null;
-#?if !moar
-            nqp::setmethcacheauth($target, 0);
-#?endif
         });
     }
 
@@ -143,9 +140,6 @@ knowhow NQPClassHOW {
             # composition time.
             $!multi_methods := push_on_clone($!multi_methods, [$name, $code]);
             $!cached_all_method_table := nqp::null;
-#?if !moar
-            nqp::setmethcacheauth($target, 0);
-#?endif
         });
 
         $code
@@ -251,9 +245,6 @@ knowhow NQPClassHOW {
             $!cached_all_method_table := nqp::null;
 
             self.publish_type_cache($target);
-#?if !moar
-            self.publish_method_cache($target);
-#?endif
             self.publish_boolification_spec($target);
         });
 
@@ -347,9 +338,6 @@ knowhow NQPClassHOW {
 
                 # Publish type and method caches and boolification spec.
                 self.publish_type_cache($target);
-#?if !moar
-                self.publish_method_cache($target);
-#?endif
                 self.publish_boolification_spec($target);
 
                 # Create BUILDPLAN.
@@ -659,31 +647,6 @@ knowhow NQPClassHOW {
         nqp::settypecache($target, @tc)
     }
 
-#?if !moar
-    sub reverse(@in) {
-        my @out;
-        for @in { nqp::unshift(@out, $_) }
-        @out
-    }
-
-    # Create and publish the method cache.  Assumes being run inside a
-    # protected block
-    method publish_method_cache($target) {
-        # Walk MRO and add methods to cache, unless another method
-        # lower in the class hierarchy "shadowed" it.
-        my %cache;
-        my $mro := $!mro;
-        my $i := nqp::elems($mro);
-        while --$i >= 0 {
-            my $type := nqp::atpos($mro, $i);
-            for $type.HOW.method_table {
-                nqp::bindkey(%cache, nqp::iterkey_s($_), nqp::iterval($_));
-            }
-        }
-        nqp::setmethcache($target, %cache);
-        nqp::setmethcacheauth($target, 1);
-    }
-#?endif
 
     # Return a hash with the methodes keyed on name.  Updates the table if
     # it wasn't set yet in a thread-safe way

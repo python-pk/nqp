@@ -163,10 +163,6 @@ knowhow NQPParametricRoleHOW {
                 }
 
                 nqp::settypecache($target, [$target.WHAT]);
-#?if !moar
-                nqp::setmethcache($target, {});
-                nqp::setmethcacheauth($target, 1);
-#?endif
                 $!composed := 1;
             }
         });

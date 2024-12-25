@@ -125,17 +125,17 @@ nqp::sethllconfig('nqp', nqp::hash(
         # BOOTHashes don't actually need transformation
         nqp::ishash($hash) ?? $hash !! $hash.FLATTENABLE_HASH
     },
-#?if moar
+
     'call_dispatcher',        'nqp-call',
     'method_call_dispatcher', 'nqp-meth-call',
     'find_method_dispatcher', 'nqp-find-meth',
     'hllize_dispatcher',      'nqp-hllize',
     'istype_dispatcher',      'nqp-istype',
     'isinvokable_dispatcher', 'nqp-isinvokable',
-#?endif
+
 ));
 
-#?if moar
+
 nqp::register('nqp-hllize', -> $capture {
     nqp::guard('type', nqp::track('arg', $capture, 0));
     my $obj := nqp::captureposarg($capture, 0);
@@ -159,6 +159,6 @@ nqp::register('nqp-hllize', -> $capture {
         nqp::delegate('boot-value', $capture);
     }
 });
-#?endif
+
 
 my class NQPLabel { }

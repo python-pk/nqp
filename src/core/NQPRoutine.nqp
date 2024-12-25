@@ -231,107 +231,6 @@ my knowhow NQPRoutine {
     }
 
     # On MoarVM, we use new-disp to do the multiple dispatch.
-#?if !moar
-    method dispatch($capture) {
-        # Count arguments.
-        my int $num_args := nqp::captureposelems($capture);
-
-        # Get list and number of candidates, triggering a sort if there are none.
-        my @candidates := $!dispatch_order;
-        if nqp::isnull(@candidates) {
-            nqp::scwbdisable();
-            @candidates := $!dispatch_order := self.sort_dispatchees();
-            nqp::scwbenable();
-        }
-        my int $num_candidates := nqp::elems(@candidates);
-
-        # Initialize dispatcher state.
-        my @possibles;
-
-        # Go through candidates.
-        my int $type_mismatch;
-        my int $type_check_count;
-        my int $i;
-        my int $cur_idx := 0;
-        my $cur_candidate;
-        while 1 {
-            $cur_candidate := @candidates[$cur_idx];
-
-            if nqp::isnull($cur_candidate) {
-                # If we have some possible candidate(s), we're done in this loop.
-                if nqp::elems(@possibles) {
-                    last;
-                }
-
-                # Otherwise, we keep looping and looking, unless we really hit the end.
-                if nqp::isnull(@candidates[++$cur_idx]) {
-                    last;
-                }
-                else {
-                    next;
-                }
-            }
-
-            # Check if it's admissible by arity.
-            if $num_args < $cur_candidate<min_arity> || $num_args > $cur_candidate<max_arity> {
-                ++$cur_idx;
-                next;
-            }
-
-            # Check if it's admissible by type.
-            $type_check_count := $cur_candidate<num_types> > $num_args
-                             ?? $num_args
-                             !! $cur_candidate<num_types>;
-            $type_mismatch := 0;
-            $i := 0;
-            while $i < $type_check_count {
-                my $param := nqp::captureposarg($capture, $i);
-                my $param_type := $param.WHAT;
-                my $type_obj := $cur_candidate<types>[$i];
-                my $definedness := $cur_candidate<definednesses>[$i];
-                unless nqp::eqaddr($param_type, $type_obj) || nqp::isnull($type_obj) || is_narrower_type($param_type, $type_obj) {
-                    $type_mismatch := 1;
-                    last;
-                }
-                if $definedness {
-                    # Have a constraint on the definedness.
-                    my int $defined := nqp::isnull($param_type) ?? nqp::defined($param) !! nqp::isconcrete($param);
-                    if (!$defined && $definedness == $DEFINED_ONLY) || ($defined && $definedness == $UNDEFINED_ONLY) {
-                        $type_mismatch := 1;
-                        last;
-                    }
-                }
-                ++$i;
-            }
-
-            if $type_mismatch {
-                ++$cur_idx;
-                next;
-            }
-
-            # If we get here, it's an admissible candidate; add to list. */
-            nqp::push(@possibles, $cur_candidate);
-            ++$cur_idx;
-        }
-
-        # Cache the result if there's a single chosen one and return it.
-        if nqp::elems(@possibles) == 1 {
-            my $result := @possibles[0]<sub>;
-            nqp::scwbdisable();
-            $!dispatch_cache := nqp::multicacheadd($!dispatch_cache, $capture, $result);
-            nqp::scwbenable();
-            $result
-        }
-        elsif nqp::elems(@possibles) == 0 {
-            # XXX Include possible candidate signatures.
-            nqp::die("No applicable candidates found to dispatch to for '" ~ self.name ~ "'.")
-        }
-        else {
-            # XXX Include ambiguous candidate signatures.
-            nqp::die("Ambiguous dispatch to multi '" ~ self.name ~ "'.")
-        }
-    }
-#?endif
 
     method clone() {
         # Clone the underlying VM code ref.
@@ -354,9 +253,6 @@ my knowhow NQPRoutine {
     method signature() { $!signature }
     method gist()      { self.name   }
 }
-#?if !moar
-nqp::setinvokespec(NQPRoutine, NQPRoutine, '$!do', nqp::null);
-#?endif
 nqp::setboolspec(NQPRoutine, 5, nqp::null);
 nqp::settypehll(NQPRoutine, 'nqp');
 
@@ -588,8 +484,5 @@ my knowhow NQPRegex {
     method !set_name($name) { nqp::setcodename($!do, $name); }
     method name() { nqp::getcodename($!do) }
 }
-#?if !moar
-nqp::setinvokespec(NQPRegex, NQPRegex, '$!do', nqp::null);
-#?endif
 nqp::setboolspec(NQPRegex, 5, nqp::null);
 nqp::settypehll(NQPRegex, 'nqp');

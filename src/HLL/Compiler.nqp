@@ -27,9 +27,9 @@ class HLL::Compiler does HLL::Backend::Default {
 #?if js
         ~ ' substagestats beautify nqp-runtime=s perl6-runtime=s libpath=s shebang execname=s source-map'
 #?endif
-#?if moar
+
         ~ ' confprog=s full-cleanup debug-suspend debug-port=s tracing'
-#?endif
+
         );
     }
 

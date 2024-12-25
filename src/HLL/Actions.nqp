@@ -85,7 +85,7 @@ class HLL::Actions {
                             elsif $lextype == 6 {
                                 $block.symbol($key, :scope<lexical>, :value(nqp::atkey_i($pad, $key)), :type(int32));
                             }
-#?if moar
+
                             # uint8
                             elsif $lextype == 7 {
                                 $block.symbol($key, :scope<lexical>, :value(nqp::atkey_u($pad, $key)), :type(uint8));
@@ -102,7 +102,7 @@ class HLL::Actions {
                             elsif $lextype == nqp::const::BIND_VAL_UINT {
                                 $block.symbol($key, :scope<lexical>, :value(nqp::atkey_u($pad, $key)), :type(uint64));
                             }
-#?endif
+
                             else {
                                 die("Unhandled lexical type")
                             }

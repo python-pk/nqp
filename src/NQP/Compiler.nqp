@@ -33,18 +33,18 @@ my @clo := $nqpcomp.commandline_options();
 @clo.push('bootstrap');
 $nqpcomp.addstage('classname', :after<start>);
 #?endif
-#?if moar
+
 @clo.push('vmlibs=s');
 @clo.push('bootstrap');
-#?endif
+
 #?if js
 @clo.push('nyi=s');
 #?endif
 
-#?if moar
+
 # XXX FIX ME
 sub MAIN(@ARGS) {
-#?endif
+
 #?if jvm
 sub MAIN(*@ARGS) {
 #?endif

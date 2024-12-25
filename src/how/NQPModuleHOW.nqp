@@ -35,10 +35,6 @@ knowhow NQPModuleHOW {
 
     method compose($target) {
         unless $!composed {
-#?if !moar
-            nqp::setmethcache($target, {});
-            nqp::setmethcacheauth($target, 1);
-#?endif
             $!composed := 1;
         }
 

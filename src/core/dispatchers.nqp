@@ -1,4 +1,4 @@
-#?if moar
+
 #- nqp-meth-call ---------------------------------------------------------------
 # Dispatch method calls by name.  Expects the decontainerized invocant and
 # the method name as the first 2 arguments: the rest are arguments to the
@@ -711,4 +711,4 @@ nqp::register('nqp-isinvokable', -> $capture {
       )
     );
 });
-#?endif
+
